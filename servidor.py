@@ -21,14 +21,16 @@ client_socket, client_address = server_socket.accept()
 while True:
     # Receba uma mensagem do cliente
     message = client_socket.recv(1024)
-    if not message:
-        break  # Se não houver mais mensagens do cliente, saia do loop
 
-    # Processar a mensagem recebida (aqui, apenas a imprime)
+    # Verifique se a mensagem é "fim" (para encerrar a comunicação)
+    if message.decode() == "fim":
+        break
+
+    # Imprima a mensagem recebida do cliente
     print(f"Recebido do cliente: {message.decode()}")
 
     # Envie uma resposta de volta ao cliente
-    response = "Mensagem recebida pelo servidor"
+    response = input("Digite uma resposta: ")  # Aguarde a entrada do servidor
     client_socket.send(response.encode())
 
 # Fechar a conexão com o cliente
@@ -36,3 +38,4 @@ client_socket.close()
 
 # Fechar o socket do servidor
 server_socket.close()
+
