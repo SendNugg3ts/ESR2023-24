@@ -2,7 +2,7 @@ import socket
 
 # Defina o endereço IP e a porta do servidor
 host = '10.0.0.10'  # Substitua pelo IP do seu servidor
-port = 3000  # Substitua pela porta desejada
+port = 10000  # Substitua pela porta desejada
 
 # Crie um socket do servidor
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
