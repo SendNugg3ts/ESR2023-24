@@ -10,17 +10,14 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Conectar ao servidor
 client_socket.connect((host, port))
 
+# Enviar a mensagem "HELLO" para o servidor
+message = "HELLO"
+client_socket.send(message.encode())
+
 # Receber uma resposta do servidor
 response = client_socket.recv(1024)
 # Imprimir a resposta recebida do servidor
 print(f"Recebido do servidor: {response.decode()}")
 
-# Enviar a mensagem "HELLO" de volta ao servidor
-messagem = "HELLO"
-client_socket.send(messagem.encode())
-
-
-
 # Fechar a conexão com o servidor
 client_socket.close()
-

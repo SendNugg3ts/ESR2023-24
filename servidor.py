@@ -18,17 +18,19 @@ print(f"Servidor aguardando conexão em {host}:{port}")
 # Aceitar a conexão quando um cliente se conectar
 client_socket, client_address = server_socket.accept()
 
-# Receber uma resposta do servidor
-response = server_socket.recv(1024)
-# Imprimir a resposta recebida do servidor
+# Receber uma resposta do cliente
+response = client_socket.recv(1024)
+# Imprimir a resposta recebida do cliente
 print(f"Recebido do cliente: {response.decode()}")
-message= "HELLO"
-client_socket.send(message.encode())
 
+# Enviar a mensagem "HELLO" de volta ao cliente
+message = "HELLO"
+client_socket.send(message.encode())
 
 # Fechar a conexão com o cliente
 client_socket.close()
 
 # Fechar o socket do servidor
 server_socket.close()
+
 
