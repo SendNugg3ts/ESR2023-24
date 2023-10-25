@@ -10,22 +10,16 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Conectar ao servidor
 client_socket.connect((host, port))
 
-while True:
-    # Solicitar uma mensagem ao cliente
-    message = input("Digite uma mensagem (ou 'fim' para encerrar): ")
+# Receber uma resposta do servidor
+response = client_socket.recv(1024)
+# Imprimir a resposta recebida do servidor
+print(f"Recebido do servidor: {response.decode()}")
 
-    # Enviar a mensagem para o servidor
-    client_socket.send(message.encode())
+# Enviar a mensagem "HELLO" de volta ao servidor
+messagem = "HELLO"
+client_socket.send(messagem.encode())
 
-    # Verificar se o cliente deseja terminar a comunicação
-    if message == "fim":
-        break
 
-    # Receber uma resposta do servidor
-    response = client_socket.recv(1024)
-
-    # Imprimir a resposta recebida do servidor
-    print(f"Recebido do servidor: {response.decode()}")
 
 # Fechar a conexão com o servidor
 client_socket.close()
