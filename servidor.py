@@ -18,20 +18,9 @@ print(f"Servidor aguardando conexão em {host}:{port}")
 # Aceitar a conexão quando um cliente se conectar
 client_socket, client_address = server_socket.accept()
 
-while True:
-    # Receber uma mensagem do cliente
-    message = client_socket.recv(1024)
+message= "HELLO"
+client_socket.send(message.encode())
 
-    # Verificar se a mensagem é "fim" (para terminar a comunicação)
-    if message.decode() == "fim":
-        break
-
-    # Imprimir a mensagem recebida do cliente
-    print(f"Recebido do cliente: {message.decode()}")
-
-    # Enviar uma resposta de volta ao cliente
-    response = input("Digite uma resposta: ")  # Aguarde a entrada do servidor
-    client_socket.send(response.encode())
 
 # Fechar a conexão com o cliente
 client_socket.close()
