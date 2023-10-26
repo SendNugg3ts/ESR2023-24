@@ -1,0 +1,6 @@
+{
+    "vizinhos": [
+      {"ip": "10.0.1.20", "porta": 10000,"latencia": 0},
+      {"ip": "10.0.2.20", "porta": 10000,"latencia": 0}
+    ]
+  }
