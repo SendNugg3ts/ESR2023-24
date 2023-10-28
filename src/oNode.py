@@ -1,6 +1,29 @@
 import socket
 import time
 import json
+import sys
+import os
+import re
+from Servidor.Servidor import *
+from Cliente.Cliente import *
+
+nodeID = sys.argv[1]
+
+current_pwd_path = os.path.dirname(os.path.abspath(__file__))
+video_pwd_path = (re.findall("(?:(.*?)src)", current_pwd_path))[0]
+path_to_nodeID = os.path.join(video_pwd_path, "util/" + str(nodeID) + ".json")
+
+i = open(path_to_nodeID)
+
+info = json.load(i)
+
+nodeIP = info["ip"]
+if info["server"] == "False":
+    isServer = False
+else:
+    isServer = True
+hostIP = info["vizinhos"][0]["ip"]
+
 
 def medir_latencia(vizinho):
     try:
@@ -25,6 +48,13 @@ def atualizar_medicoes_latencia(cliente_json):
         if latencia is not None:
             vizinho["latencia"] = latencia
 
+
+if isServer:
+    serverStart(nodeIP,port=1000)
+else:
+    clientStart(hostIP,port=1000)
+
+
 # Aqui você carrega o JSON do cliente, faz a medição de latência e atualiza o JSON
 with open("cliente1.json", "r") as json_file:
     cliente_json = json.load(json_file)
@@ -33,4 +63,4 @@ with open("cliente1.json", "r") as json_file:
     with open("cliente1.json", "w") as json_file:
         json.dump(cliente_json, json_file)
 
-# Resto do seu código
+
