@@ -41,11 +41,7 @@ class ServerWorker:
 	def processRtspRequest(self, data):
 		"""Process RTSP request sent from the client."""
 		# Get the request type
-		print("\n")
-		print("\n")
 		request = str(data).splitlines()
-		print(request)
-		print("\n")
 		line1 = str(request[0]).split()
 		requestType = str(line1[0])
 
@@ -55,8 +51,6 @@ class ServerWorker:
 		current_pwd_path = os.path.dirname(os.path.abspath(__file__))
 		video_pwd_path = re.findall("(?:(.*?)src)", current_pwd_path)[0]
 		path_to_file = os.path.join(video_pwd_path, "video/" + filename)
-
-		print(self.clientInfo)
 
 		# Get the RTSP sequence number
 		seq = int(str(request[1]).split()[1])
