@@ -1,6 +1,6 @@
 {
     "server": "False",
-    "ip":"10.0.1.21",
+    "ip":"10.0.1.20",
     "vizinhos": [
       {"ip": "10.0.0.10", "porta": 10000,"latencia": 0},
       {"ip": "10.0.1.21", "porta": 10000,"latencia": 0}

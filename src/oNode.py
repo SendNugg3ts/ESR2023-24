@@ -48,11 +48,14 @@ def atualizar_medicoes_latencia(cliente_json):
         if latencia is not None:
             vizinho["latencia"] = latencia
 
-
+filename = "movie.Mjpeg"
+SERVERPORT = 2500
 if isServer:
-    serverStart(nodeIP,port=1000)
+    #serverStart(nodeIP,port=1000)
+    StartStreaming(nodeIP,SERVERPORT)
 else:
-    clientStart(hostIP,port=1000)
+    clientGuiStart(hostIP,SERVERPORT,nodeIP,3500,nodeID,filename)
+    #clientStartMessaging(hostIP,port=1000)
 
 
 # Aqui você carrega o JSON do cliente, faz a medição de latência e atualiza o JSON

@@ -1,24 +1,38 @@
 import socket
+from tkinter import Tk
+from time import sleep
+import os
+from Cliente.ClientWorker import ClientWorker
 
-# Definir o endereço IP e a porta do servidor
-#host = '10.0.0.10'  # Substituir pelo IP do servidor
-#port = 10000  # Substituir pela porta usada pelo servidor
 
-def clientStart(host,port):
+
+def clientStartMessaging(host,port):
     # Criar um socket do cliente
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    # Conectar ao servidor
     client_socket.connect((host, port))
-
-    # Enviar a mensagem "HELLO" para o servidor
+    
     message = "HELLO"
     client_socket.send(message.encode())
 
-    # Receber uma resposta do servidor
     response = client_socket.recv(1024)
-    # Imprimir a resposta recebida do servidor
     print(f"Recebido do servidor: {response.decode()}")
 
-    # Fechar a conexão com o servidor
     client_socket.close()
+
+def clientGuiStart(serverIP,serverPort, addr, port, name, filename):
+    print(f'\nA iniciar {name} à escuta em {addr}:{port}')
+    while True:
+        
+        if os.environ.get('DISPLAY', '') == '':
+            print('Nenhum display encontrado, Usar DISPLAY :0.0')
+            os.environ.__setitem__('DISPLAY', ':0.0')
+
+        root = Tk()
+        # Create a new client
+        app = ClientWorker(root,serverIP,serverPort,addr,port,filename)
+        app.master.title("RTP Client")
+        root.wait_visibility()
+        root.mainloop()
+        sleep(2)
+    

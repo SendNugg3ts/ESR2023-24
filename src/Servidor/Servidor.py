@@ -1,9 +1,6 @@
 import socket
 import threading
-
-# Definir o endereço IP e a porta do servidor
-#host = '10.0.0.10'  # Substitua pelo IP do servidor
-#port = 10000  # Substituir pela porta desejada
+from Servidor.ServerWorker import ServerWorker
 
 # Função para lidar com um cliente
 def handle_client(client_socket):
@@ -40,6 +37,19 @@ def serverStart(host,port):
         # Iniciar uma nova thread para lidar com o cliente
         client_handler = threading.Thread(target=handle_client, args=(client_socket,))
         client_handler.start()
-
+	
+	
+def StartStreaming(ServerIP, ServerPort):
+    rtspSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    rtspSocket.bind((ServerIP, ServerPort))
+    rtspSocket.listen(5)
+    print(f"Servidor aguardando conexões em {ServerIP}:{ServerPort}")
+    # Receive client info (address, port) through RTSP/TCP session
+    while True:
+        clientInfo = {}
+        clientInfo['rtspSocket'] = rtspSocket.accept()
+        ServerWorker(clientInfo).run()
+    
+    rtspSocket.close()
 
 
