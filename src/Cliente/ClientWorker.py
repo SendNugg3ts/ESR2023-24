@@ -9,10 +9,8 @@ sys.path.append("..")
 from Servidor.RtpPacket import RtpPacket
 
 current_pwd_path = os.path.dirname(os.path.abspath(__file__))
-print(current_pwd_path)
 video_pwd_path = (re.findall("(?:(.*?)src)", current_pwd_path))[0]
-print(video_pwd_path)
-CACHE_FILE_NAME = "src/cache-"
+CACHE_FILE_NAME = "src/cacha-"
 CACHE_FILE_EXT = ".jpg"
 
 class ClientWorker:
