@@ -10,8 +10,11 @@ from Servidor.RtpPacket import RtpPacket
 
 current_pwd_path = os.path.dirname(os.path.abspath(__file__))
 video_pwd_path = (re.findall("(?:(.*?)src)", current_pwd_path))[0]
-CACHE_FILE_NAME = "src/cacha-"
+#CACHE_FILE_NAME = "src/cacha-"
+#CACHE_FILE_EXT = ".jpg"
+CACHE_FILE_NAME = "cache"
 CACHE_FILE_EXT = ".jpg"
+
 
 class ClientWorker:
 	INIT = 0
@@ -78,11 +81,18 @@ class ClientWorker:
 		if self.state == self.INIT:
 			self.sendRtspRequest(self.SETUP)
 	
+	
+
+
 	def exitClient(self):
 		"""Teardown button handler."""
-		self.sendRtspRequest(self.TEARDOWN)		
-		self.master.destroy() # Close the gui window
-		os.remove(CACHE_FILE_NAME + str(self.sessionId) + CACHE_FILE_EXT) # Delete the cache image from video
+		current_directory = os.path.dirname(__file__) if __file__ is not None else os.path.curdir
+		cachename = os.path.join(current_directory, CACHE_FILE_NAME + str(self.sessionId) + CACHE_FILE_EXT)
+		self.sendRtspRequest(self.TEARDOWN)
+		self.master.destroy()  # Close the GUI window
+		os.remove(cachename)  # Delete the cache image from video
+
+
 
 	def pauseMovie(self):
 		"""Pause button handler."""
@@ -112,7 +122,6 @@ class ClientWorker:
 										
 					if currFrameNbr > self.frameNbr: # Discard the late packet
 						self.frameNbr = currFrameNbr
-						print("\n\nAQUIIIIIIIIIII\n\n")
 						self.updateMovie(self.writeFrame(rtpPacket.getPayload()))
 			except:
 				# Stop listening upon requesting PAUSE or TEARDOWN
@@ -128,11 +137,12 @@ class ClientWorker:
 					
 	def writeFrame(self, data):
 		"""Write the received frame to a temp image file. Return the image file."""
-		cachename = CACHE_FILE_NAME + str(self.sessionId) + CACHE_FILE_EXT
+		current_directory = os.path.abspath(os.path.dirname(__file__))
+		cachename = os.path.join(current_directory, CACHE_FILE_NAME + str(self.sessionId) + CACHE_FILE_EXT)
+
 		file = open(cachename, "wb")
 		file.write(data)
 		file.close()
-		
 		return cachename
 	
 	def updateMovie(self, imageFile):

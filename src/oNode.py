@@ -4,6 +4,8 @@ import json
 import sys
 import os
 import re
+
+
 from Servidor.Servidor import *
 from Cliente.Cliente import *
 
@@ -12,6 +14,7 @@ nodeID = sys.argv[1]
 current_pwd_path = os.path.dirname(os.path.abspath(__file__))
 video_pwd_path = (re.findall("(?:(.*?)src)", current_pwd_path))[0]
 path_to_nodeID = os.path.join(video_pwd_path, "util/" + str(nodeID) + ".json")
+
 
 i = open(path_to_nodeID)
 
@@ -39,31 +42,24 @@ def medir_latencia(vizinho):
     except Exception as e:
         return None
 
-
-
-# Função para atualizar o JSON com as medições de latência
-def atualizar_medicoes_latencia(cliente_json):
-    for vizinho in cliente_json["vizinhos"]:
-        latencia = medir_latencia(vizinho)
-        if latencia is not None:
-            vizinho["latencia"] = latencia
+def atualizar_medicoes_latencia(cliente_json, nodeID):
+    if not isServer:  # Somente para clientes
+        for vizinho in cliente_json["vizinhos"]:
+            latencia = medir_latencia(vizinho)
+            if latencia is not None:
+                vizinho["latencia"] = latencia
 
 filename = "movie.Mjpeg"
 SERVERPORT = 2500
 if isServer:
-    #serverStart(nodeIP,port=1000)
-    StartStreaming(nodeIP,SERVERPORT)
+    StartStreaming(nodeIP, SERVERPORT)
 else:
-    clientGuiStart(hostIP,SERVERPORT,nodeIP,3500,nodeID,filename)
-    #clientStartMessaging(hostIP,port=1000)
+    clientGuiStart(hostIP, SERVERPORT, nodeIP, 3500, nodeID, filename)
 
-
-# Aqui você carrega o JSON do cliente, faz a medição de latência e atualiza o JSON
-with open("cliente1.json", "r") as json_file:
-    cliente_json = json.load(json_file)
-    atualizar_medicoes_latencia(cliente_json)
-    # Salve o JSON atualizado de volta no arquivo, se necessário
-    with open("cliente1.json", "w") as json_file:
-        json.dump(cliente_json, json_file)
-
+if not isServer:
+    with open(f"{nodeID}.json", "r") as json_file:
+        cliente_json = json.load(json_file)
+        atualizar_medicoes_latencia(cliente_json, nodeID)
+        with open(f"{nodeID}.json", "w") as json_file:
+            json.dump(cliente_json, json_file)
 

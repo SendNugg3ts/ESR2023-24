@@ -49,8 +49,13 @@ class ServerWorker:
 		filename = str(line1[1])
 
 		current_pwd_path = os.path.dirname(os.path.abspath(__file__))
-		video_pwd_path = re.findall("(?:(.*?)src)", current_pwd_path)[0]
-		path_to_file = os.path.join(video_pwd_path, "video/" + filename)
+		#video_pwd_path = re.findall("(?:(.*?)src)", current_pwd_path)[0]
+		#path_to_file = os.path.join(video_pwd_path, "video/" + filename)
+		path_to_file = os.path.join(os.path.dirname(os.path.dirname(current_pwd_path)), "video", filename)
+		print("Video path:", path_to_file)
+
+
+
 
 		# Get the RTSP sequence number
 		seq = int(str(request[1]).split()[1])
@@ -229,3 +234,5 @@ class ServerWorker:
 			print("404 NOT FOUND")
 		elif code == self.CON_ERR_500:
 			print("500 CONNECTION ERROR")
+
+

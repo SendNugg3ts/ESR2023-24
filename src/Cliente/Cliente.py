@@ -35,4 +35,5 @@ def clientGuiStart(serverIP,serverPort, addr, port, name, filename):
         root.wait_visibility()
         root.mainloop()
         sleep(2)
+        continue
     
