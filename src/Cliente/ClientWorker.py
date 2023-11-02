@@ -10,8 +10,6 @@ from Servidor.RtpPacket import RtpPacket
 
 current_pwd_path = os.path.dirname(os.path.abspath(__file__))
 video_pwd_path = (re.findall("(?:(.*?)src)", current_pwd_path))[0]
-#CACHE_FILE_NAME = "src/cacha-"
-#CACHE_FILE_EXT = ".jpg"
 CACHE_FILE_NAME = "cache"
 CACHE_FILE_EXT = ".jpg"
 
