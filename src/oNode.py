@@ -21,11 +21,22 @@ i = open(path_to_nodeID)
 info = json.load(i)
 
 nodeIP = info["ip"]
-if info["server"] == "False":
-    isServer = False
-else:
-    isServer = True
+isServer = bool(info["server"])
 hostIP = info["vizinhos"][0]["ip"]
+
+filename = "movie.Mjpeg"
+SERVERPORT = 2500
+if isServer:
+    StartStreaming(nodeIP, SERVERPORT)
+else:
+    clientGuiStart(hostIP, SERVERPORT, nodeIP, 3500, nodeID, filename)
+
+if not isServer:
+    with open(f"{nodeID}.json", "r") as json_file:
+        cliente_json = json.load(json_file)
+        #atualizar_medicoes_latencia(cliente_json, nodeID)
+        with open(f"{nodeID}.json", "w") as json_file:
+            json.dump(cliente_json, json_file)
 
 
 def medir_latencia(vizinho):
@@ -49,17 +60,4 @@ def atualizar_medicoes_latencia(cliente_json, nodeID):
             if latencia is not None:
                 vizinho["latencia"] = latencia
 
-filename = "movie.Mjpeg"
-SERVERPORT = 2500
-if isServer:
-    StartStreaming(nodeIP, SERVERPORT)
-else:
-    clientGuiStart(hostIP, SERVERPORT, nodeIP, 3500, nodeID, filename)
-
-if not isServer:
-    with open(f"{nodeID}.json", "r") as json_file:
-        cliente_json = json.load(json_file)
-        atualizar_medicoes_latencia(cliente_json, nodeID)
-        with open(f"{nodeID}.json", "w") as json_file:
-            json.dump(cliente_json, json_file)
 

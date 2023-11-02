@@ -1,5 +1,5 @@
 {
-    "server": "True",
+    "server": true,
     "ip":"10.0.0.10",
     "vizinhos": [
       {"ip": "10.0.1.20", "porta": 10000,"latencia": 0},
