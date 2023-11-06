@@ -1,10 +1,10 @@
 {
   "server": false,
   "RP":false,
-  "ip":"10.0.2.22",
-  "porta":4000,
-    "vizinhos": [
-      {"ip": "10.0.1.20", "porta": 2000,"latencia": 0},
-      {"ip": "10.0.2.20", "porta": 3000,"latencia": 0}
-    ]
-  }
+  "ip":"10.0.10.20",
+  "porta":2040,
+  "vizinhos": [
+    {"ip": "10.0.10.21", "porta": 2050},
+    {"ip": "10.0.0.1", "porta": 3000}
+  ]
+}
