@@ -84,17 +84,21 @@ def RpTestLatency(host1, port1, host2, port2):
         except Exception as e:
             print(f"Error with server 2: {e}")
             latencia2 = float('inf')  # Set a high latency value in case of an error
+            
+        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         if latencia1 < latencia2:
             print("Server 1 is faster")
-            server = "server1"
+            server_socket.connect((host1, port1))
+
         else:
             print("Server 2 is faster")
-            server = "server2"
-
+            server_socket.connect((host2, port2))
+            
+        server_socket.send("START_STREAM".encode())
         print(f"Latency for server 1: {latencia1} seconds")
         print(f"Latency for server 2: {latencia2} seconds")
-
+        server_socket.close()
         time.sleep(20)
 
 

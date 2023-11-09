@@ -5,6 +5,8 @@ from Servidor.ServerWorker import ServerWorker
 # Função para lidar com um cliente
 def handle_client(client_socket):
     message = client_socket.recv(1024)
+    if message.decode() == "START_STREAM":
+        print("Começa a streaaaam")
     print(f"Recebido do cliente {threading.current_thread().name}: {message.decode()}")
     response = "HELLO"
     client_socket.send(response.encode())
