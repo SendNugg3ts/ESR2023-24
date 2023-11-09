@@ -1,6 +1,7 @@
 {
     "server": false,
     "RP":false,
+    "router":false,
     "ip":"10.0.4.20",
     "porta":2000,
     "vizinhos": [
