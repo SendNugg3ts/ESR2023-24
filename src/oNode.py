@@ -34,13 +34,11 @@ elif bool(info["RP"]) == False and bool(info["router"]) == True:
     routerVizinhoID = info["vizinhos"][2]["ip"]
     RPID =info["vizinhos"][3]["ip"]
     nodePort = info["porta"]
-
 elif bool(info["server"]) == True:
     nodeIP = info["ip"]
     RPIP = info["vizinhos"][0]["ip"]
     nodePort = info["porta"]
-
-elif bool(info["RP"]) == False and bool(info["router"]) == False and bool(info["server"]) == False:
+elif bool(info["router"]) == False and bool(info["server"]) == False:
     nodeIP = info["ip"]
     router = info["vizinhos"][0]["ip"]
     nodePort = info["porta"]
