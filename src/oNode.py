@@ -24,14 +24,26 @@ if bool(info["RP"]) == True:
     nodeIP = info["ip"]
     server1IP = info["vizinhos"][0]["ip"]
     server2IP = info["vizinhos"][1]["ip"]
+    router1IP = info["vizinhos"][2]["ip"]
+    router2IP = info["vizinhos"][3]["ip"]
     nodePort = info["porta"]
 elif bool(info["RP"]) == False and bool(info["router"]) == True:
     nodeIP = info["ip"]
     clienteEIP = info["vizinhos"][0]["ip"]
     clienteDIP = info["vizinhos"][1]["ip"]
+    routerVizinhoID = info["vizinhos"][2]["ip"]
+    RPID =info["vizinhos"][3]["ip"]
     nodePort = info["porta"]
 
+elif bool(info["server"]) == True:
+    nodeIP = info["ip"]
+    RPIP = info["vizinhos"][0]["ip"]
+    nodePort = info["porta"]
 
+elif bool(info["RP"]) == False and bool(info["router"]) == False and bool(info["server"]) == False:
+    nodeIP = info["ip"]
+    router = info["vizinhos"][0]["ip"]
+    nodePort = info["porta"]
 
 
 
