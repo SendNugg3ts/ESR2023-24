@@ -14,7 +14,7 @@ def handle_client(client_socket):
 def serverStart(host,port):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((host, port))
-    server_socket.listen(5)
+    server_socket.listen(1)
     print(f"Servidor aguardando conexões em {host}:{port}")
     while True:
         client_socket, client_address = server_socket.accept()
