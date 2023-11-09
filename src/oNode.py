@@ -27,9 +27,10 @@ if bool(info["RP"]) == True:
     nodePort = info["porta"]
 elif bool(info["RP"]) == False and bool(info["router"]) == True:
     nodeIP = info["ip"]
-    cliente1IP = info["vizinhos"][0]["ip"]
-    server2IP = info["vizinhos"][1]["ip"]
+    clienteEIP = info["vizinhos"][0]["ip"]
+    clienteDIP = info["vizinhos"][1]["ip"]
     nodePort = info["porta"]
+
 
 
 filename = "movie.Mjpeg"
