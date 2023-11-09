@@ -33,6 +33,8 @@ elif bool(info["RP"]) == False and bool(info["router"]) == True:
 
 
 
+
+
 filename = "movie.Mjpeg"
 SERVERPORT = 2500
 if isServer:
