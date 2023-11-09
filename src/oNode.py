@@ -48,47 +48,55 @@ elif bool(info["router"]) == False and bool(info["server"]) == False:#Cliente
     routerPort = info["vizinhos"][0]["porta"]
     nodePort = info["porta"]
 
-def RpTestLatency(host1,port1,host2,port2):
-    client_socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
+def RpTestLatency(host1, port1, host2, port2):
     while True:
         try:
+            # Create a socket for server 1
+            client_socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             start = time.time()
             client_socket1.connect((host1, port1))
             message = "Time test"
             client_socket1.send(message.encode())
 
             response = client_socket1.recv(1024)
-            print(f"Recebido do {host1}: {response.decode()}")
+            print(f"Received from {host1}: {response.decode()}")
             end = time.time()
-            latencia1=end-start
-        except:
-            pass
+            latencia1 = end - start
+            client_socket1.close()
+        except Exception as e:
+            print(f"Error with server 1: {e}")
+            latencia1 = float('inf')  # Set a high latency value in case of an error
+
         try:
+            # Create a socket for server 2
+            client_socket2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             start = time.time()
             client_socket2.connect((host2, port2))
             message = "Time test"
             client_socket2.send(message.encode())
 
             response = client_socket2.recv(1024)
-            print(f"Recebido do {host2}: {response.decode()}")
+            print(f"Received from {host2}: {response.decode()}")
             end = time.time()
-            latencia2= end-start
-        except:
-            pass
-        try:
-            if latencia1 >= latencia2:
-                print("Servidor 2 mais rapido")
-                server = "servidor2"
-            else:
-                print("Servidor 1 mais rapido")
-                server = "servidor1"
-        except:
-            continue
-        sleep(20)
-    client_socket1.close()
-    client_socket2.close()
+            latencia2 = end - start
+            client_socket2.close()
+            time.sleep(2)
+        except Exception as e:
+            print(f"Error with server 2: {e}")
+            latencia2 = float('inf')  # Set a high latency value in case of an error
+
+        if latencia1 < latencia2:
+            print("Server 1 is faster")
+            server = "server1"
+        else:
+            print("Server 2 is faster")
+            server = "server2"
+
+        print(f"Latency for server 1: {latencia1} seconds")
+        print(f"Latency for server 2: {latencia2} seconds")
+
+        time.sleep(20)
+
 
 
 
