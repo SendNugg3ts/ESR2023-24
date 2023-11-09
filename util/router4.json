@@ -1,0 +1,10 @@
+{
+    "server": false,
+    "RP":false,
+    "ip":"10.0.8.2",
+    "porta":3040,
+    "vizinhos": [
+      {"ip": "10.0.7.2", "porta": 3030},
+      {"ip": "10.0.0.1", "porta": 3000}
+    ]
+  }
