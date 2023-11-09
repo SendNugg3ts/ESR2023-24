@@ -11,6 +11,8 @@ from Cliente.Cliente import *
 
 nodeID = sys.argv[1]
 
+filename = "movie.Mjpeg"
+
 current_pwd_path = os.path.dirname(os.path.abspath(__file__))
 video_pwd_path = (re.findall("(?:(.*?)src)", current_pwd_path))[0]
 path_to_nodeID = os.path.join(video_pwd_path, "util/" + str(nodeID) + ".json")
@@ -20,37 +22,41 @@ i = open(path_to_nodeID)
 
 info = json.load(i)
 
-if bool(info["RP"]) == True:
+if bool(info["RP"]) == True:#RP
     nodeIP = info["ip"]
     server1IP = info["vizinhos"][0]["ip"]
     server2IP = info["vizinhos"][1]["ip"]
     router1IP = info["vizinhos"][2]["ip"]
     router2IP = info["vizinhos"][3]["ip"]
     nodePort = info["porta"]
-elif bool(info["RP"]) == False and bool(info["router"]) == True:
+elif bool(info["RP"]) == False and bool(info["router"]) == True:#Router
     nodeIP = info["ip"]
     clienteEIP = info["vizinhos"][0]["ip"]
     clienteDIP = info["vizinhos"][1]["ip"]
     routerVizinhoID = info["vizinhos"][2]["ip"]
     RPID =info["vizinhos"][3]["ip"]
     nodePort = info["porta"]
-elif bool(info["server"]) == True:
+elif bool(info["server"]) == True:#Servidor
     nodeIP = info["ip"]
     RPIP = info["vizinhos"][0]["ip"]
     nodePort = info["porta"]
-elif bool(info["router"]) == False and bool(info["server"]) == False:
+elif bool(info["router"]) == False and bool(info["server"]) == False:#Cliente
     nodeIP = info["ip"]
-    router = info["vizinhos"][0]["ip"]
+    routerIP = info["vizinhos"][0]["ip"]
+    routerPort = info["vizinhos"][0]["porta"]
     nodePort = info["porta"]
 
 
-
-filename = "movie.Mjpeg"
-SERVERPORT = 2500
-if isServer:
-    StartStreaming(nodeIP, SERVERPORT)
+if bool(info["server"]) == True:#Servidor
+    StartStreaming(nodeIP, nodePort)
+elif bool(info["router"]) == False and bool(info["server"]) == False:#Cliente
+    clientGuiStart(routerIP, routerPort, nodeIP, nodePort, nodeID, filename)
+elif bool(info["RP"]) == False and bool(info["router"]) == True:#Router
+    pass
+elif bool(info["RP"]) == True:#RP
+    pass
 else:
-    clientGuiStart(hostIP, SERVERPORT, nodeIP, 3500, nodeID, filename)
+    raise ValueError("Node type not supported")
 
 
 
