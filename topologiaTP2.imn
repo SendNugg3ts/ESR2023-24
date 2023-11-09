@@ -10,8 +10,8 @@ node n1 {
 	!
     }
     canvas c1
-    iconcoords {74.0 261.0}
-    labelcoords {74.0 293.0}
+    iconcoords {124.0 263.0}
+    labelcoords {124.0 295.0}
     interface-peer {eth0 n2}
 }
 
@@ -22,8 +22,8 @@ node n2 {
 	!
     }
     canvas c1
-    iconcoords {228.0 263.0}
-    labelcoords {228.0 287.0}
+    iconcoords {267.0 263.0}
+    labelcoords {267.0 287.0}
     interface-peer {e0 n1}
     interface-peer {e1 n3}
 }
@@ -67,8 +67,8 @@ node n4 {
 	!
     }
     canvas c1
-    iconcoords {695.0 264.0}
-    labelcoords {695.0 288.0}
+    iconcoords {608.0 265.0}
+    labelcoords {608.0 289.0}
     interface-peer {e0 n3}
     interface-peer {e1 n5}
 }
@@ -85,8 +85,8 @@ node n5 {
 	!
     }
     canvas c1
-    iconcoords {912.0 261.0}
-    labelcoords {912.0 293.0}
+    iconcoords {780.0 267.0}
+    labelcoords {780.0 299.0}
     interface-peer {eth0 n4}
 }
 
