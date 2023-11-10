@@ -8,6 +8,7 @@ import re
 
 from Servidor.Servidor import *
 from Cliente.Cliente import *
+from Router.RouterWorker import *
 
 nodeID = sys.argv[1]
 
@@ -34,9 +35,13 @@ if bool(info["RP"]) == True:#RP
 elif bool(info["RP"]) == False and bool(info["router"]) == True:#Router
     nodeIP = info["ip"]
     clienteEIP = info["vizinhos"][0]["ip"]
+    clienteEPorta = info["vizinhos"][0]["porta"]
     clienteDIP = info["vizinhos"][1]["ip"]
+    clienteDPorta = info["vizinhos"][1]["porta"]
     routerVizinhoID = info["vizinhos"][2]["ip"]
+    routerVizinhoPorta = info["vizinhos"][2]["porta"]
     RPID =info["vizinhos"][3]["ip"]
+    RPPorta =info["vizinhos"][3]["porta"]
     nodePort = info["porta"]
 elif bool(info["server"]) == True:#Servidor
     nodeIP = info["ip"]
@@ -105,11 +110,13 @@ def RpTestLatency(host1, port1, host2, port2):
 
 
 if bool(info["server"]) == True:#Servidor
-    serverStart(nodeIP,nodePort)
+    serverStart(nodeIP,nodePort,4010)
 elif bool(info["router"]) == False and bool(info["server"]) == False:#Cliente cabou
     clientGuiStart(routerIP, routerPort, nodeIP, nodePort, nodeID, filename)
 elif bool(info["RP"]) == False and bool(info["router"]) == True:#Router
-    pass
+    neighbors = [(clienteEIP, clienteEPorta), (clienteDIP, clienteDPorta), (routerVizinhoID, routerVizinhoPorta), (RPID, RPPorta)]
+    router_worker = RoutersWorker(RPID, RPPorta, neighbors)
+    router_worker.run()
 elif bool(info["RP"]) == True:#RP
     RpTestLatency(server1IP,server1Port,server2IP,server2Port)
 else:
