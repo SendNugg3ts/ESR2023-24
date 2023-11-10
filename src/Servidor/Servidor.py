@@ -16,7 +16,7 @@ def find_available_port(start_port):
             except socket.error:
                 start_port += 1
 
-def StartStreaming(client_socket, ServerIP, start_port):
+def StartStreaming(ServerIP, start_port):
     global is_streaming, current_streaming_port
     
     # Check if streaming is already in progress
@@ -55,7 +55,7 @@ def handle_client(client_socket, ServerIP, start_port):
     response = "HELLO"
     client_socket.send(response.encode())
     if message.decode() == "START_STREAM":
-        StartStreaming(client_socket, ServerIP, start_port)
+        StartStreaming(ServerIP, start_port)
 
 # Criar um socket do servidor
 def serverStart(host, port, start_port):
@@ -67,7 +67,7 @@ def serverStart(host, port, start_port):
     while True:
         client_socket, client_address = server_socket.accept()
         print(f"Conexão aceite de {client_address[0]}:{client_address[1]}")
-        client_handler = threading.Thread(target=handle_client, args=(client_socket, host, start_port))
+        client_handler = threading.Thread(target=handle_client, args=(client_socket,host, start_port))
         client_handler.start()
 
 	

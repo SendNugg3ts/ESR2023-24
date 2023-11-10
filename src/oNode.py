@@ -8,7 +8,6 @@ import re
 
 from Servidor.Servidor import *
 from Cliente.Cliente import *
-from Router.RouterWorker import *
 
 nodeID = sys.argv[1]
 
@@ -52,6 +51,12 @@ elif bool(info["router"]) == False and bool(info["server"]) == False:#Cliente
     routerIP = info["vizinhos"][0]["ip"]
     routerPort = info["vizinhos"][0]["porta"]
     nodePort = info["porta"]
+
+def RPConfirmation(server_socket):
+        stream_data = server_socket.recv(20480)
+        if stream_data:
+            print("Stream data received!")
+
 
 def RpTestLatency(host1, port1, host2, port2):
     while True:
@@ -103,21 +108,23 @@ def RpTestLatency(host1, port1, host2, port2):
         server_socket.send("START_STREAM".encode())
         print(f"Latency for server 1: {latencia1} seconds")
         print(f"Latency for server 2: {latencia2} seconds")
+        RPConfirmation(server_socket)
         server_socket.close()
         time.sleep(20)
 
 
 
 
+
 if bool(info["server"]) == True:#Servidor
+    nodeType= "server"
     serverStart(nodeIP,nodePort,4010)
 elif bool(info["router"]) == False and bool(info["server"]) == False:#Cliente cabou
     clientGuiStart(routerIP, routerPort, nodeIP, nodePort, nodeID, filename)
 elif bool(info["RP"]) == False and bool(info["router"]) == True:#Router
-    neighbors = [(clienteEIP, clienteEPorta), (clienteDIP, clienteDPorta), (routerVizinhoID, routerVizinhoPorta), (RPID, RPPorta)]
-    router_worker = RoutersWorker(RPID, RPPorta, neighbors)
-    router_worker.run()
+    nodeType = "router"
 elif bool(info["RP"]) == True:#RP
+    nodeType = "RP"
     RpTestLatency(server1IP,server1Port,server2IP,server2Port)
 else:
     raise ValueError("Node type not supported")
