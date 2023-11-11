@@ -55,7 +55,9 @@ elif bool(info["router"]) == False and bool(info["server"]) == False:#Cliente
 def RPConfirmation(server_socket):
         stream_data = server_socket.recv(20480)
         if stream_data:
-            print("Stream data received!")
+            print(stream_data)
+            #print("Stream data received!")
+        
 
 
 def RpTestLatency(host1, port1, host2, port2):
@@ -100,15 +102,16 @@ def RpTestLatency(host1, port1, host2, port2):
         if latencia1 < latencia2:
             print("Server 1 is faster")
             server_socket.connect((host1, port1))
-
+            server_socket.send("START_STREAM".encode())
+            clientGuiStart(host1,4010,nodeIP,3000,nodeID,filename)#4010 tem de ser a porta de streaming do server e 3000 tem de ser a porta que recebe os rtsps
         else:
             print("Server 2 is faster")
-            server_socket.connect((host2, port2))
-            
-        server_socket.send("START_STREAM".encode())
-        print(f"Latency for server 1: {latencia1} seconds")
-        print(f"Latency for server 2: {latencia2} seconds")
-        RPConfirmation(server_socket)
+            server_socket.connect((host2, port2)) 
+            server_socket.send("START_STREAM".encode())
+            time.sleep(3)
+            clientGuiStart(host2,4010,nodeIP,3000,nodeID,filename)          
+        #print(f"Latency for server 1: {latencia1} seconds")
+        #print(f"Latency for server 2: {latencia2} seconds")
         server_socket.close()
         time.sleep(20)
 

@@ -31,12 +31,11 @@ def StartStreaming(ServerIP, start_port):
     rtspSocket.listen(5)
     print(f"Servidor aguardando conexões em {ServerIP}:{streaming_port}")
     
-    # Set streaming state and current streaming port
     is_streaming = True
     current_streaming_port = streaming_port
     
-    # Receive client info (address, port) through RTSP/TCP session
     while True:
+        print("a streamar")
         clientInfo = {}
         clientInfo['rtspSocket'] = rtspSocket.accept()
         ServerWorker(clientInfo).run()
@@ -52,11 +51,13 @@ def handle_client(client_socket, ServerIP, start_port):
     
     message = client_socket.recv(1024)
     print(f"Recebido do cliente {threading.current_thread().name}: {message.decode()}")
-    response = "HELLO"
-    client_socket.send(response.encode())
     if message.decode() == "START_STREAM":
+        print("A começar stream")
         StartStreaming(ServerIP, start_port)
-
+    else:
+        response = "HELLO"
+        client_socket.send(response.encode())
+    
 # Criar um socket do servidor
 def serverStart(host, port, start_port):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
