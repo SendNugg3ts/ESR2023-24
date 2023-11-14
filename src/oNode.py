@@ -117,20 +117,70 @@ def RpTestLatency(host1, port1, host2, port2):
 
 
 
+def verificar_se_vizinho_tem_streaming(vizinho_ip, vizinho_porta):
+    buffer_size = 1024
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(2)
+            s.connect((vizinho_ip, vizinho_porta))
+            s.sendall(b"CHECK_STREAMING_STATUS")
+            response = s.recv(buffer_size).decode("utf-8")
+            if response == "STREAMING_AVAILABLE":
+                return True
+            else:
+                return False
+    except socket.error as e:
+        print(f"Erro de conexão com o vizinho: {e}")
+        return False
+
+
 
 
 if bool(info["server"]) == True:#Servidor
     nodeType= "server"
     serverStart(nodeIP,nodePort,4010)
+
 elif bool(info["router"]) == False and bool(info["server"]) == False:#Cliente cabou
     clientGuiStart(routerIP, routerPort, nodeIP, nodePort, nodeID, filename)
-elif bool(info["RP"]) == False and bool(info["router"]) == True:#Router
+    
+
+elif bool(info["RP"]) == False and bool(info["router"]) == True:  # Router
     nodeType = "router"
-elif bool(info["RP"]) == True:#RP
+    try:
+        print(f"Tentando conectar ao RP: {RPID}:{RPPorta}")
+        vizinho_tem_streaming = verificar_se_vizinho_tem_streaming(routerVizinhoID, routerVizinhoPorta)
+        print(f"Verificando streaming: {vizinho_tem_streaming}")
+
+        if vizinho_tem_streaming:
+            print(f"Conectando ao Vizinho para Streaming: {routerVizinhoID}:{routerVizinhoPorta}")
+            clientGuiStart(routerVizinhoID, routerVizinhoPorta, nodeIP, nodePort, nodeID, filename)
+        else:
+            print(f"Conectando ao RP: {RPID}:{RPPorta}")
+            clientGuiStart(RPID, RPPorta, nodeIP, nodePort, nodeID, filename)
+
+        print("Conexão estabelecida com sucesso.")
+    except Exception as e:
+        print(f"Erro ao conectar ao RP ou Vizinho: {e}")
+
+
+
+
+elif bool(info["RP"]) == True:  # RP
     nodeType = "RP"
-    RpTestLatency(server1IP,server1Port,server2IP,server2Port)
+    try:
+        RpTestLatency(server1IP, server1Port, server2IP, server2Port)
+    except Exception as e:
+        print(f"Erro ao testar latência para servidores: {e}")
 else:
     raise ValueError("Node type not supported")
+
+
+
+#elif bool(info["RP"]) == True:#RP
+    #nodeType = "RP"
+    #RpTestLatency(server1IP,server1Port,server2IP,server2Port)
+#else:
+    #raise ValueError("Node type not supported")
 
 
 
