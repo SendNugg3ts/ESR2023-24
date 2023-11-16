@@ -6,7 +6,7 @@
     "porta_streaming":2000,
     "porta_mensagem":2005,
     "vizinhos": [
-      {"ip": "10.0.3.1", "porta_streaming": 3010,"porta_mensagem":3015}
+      {"ip": "10.0.4.1", "porta_streaming": 3010,"porta_mensagem":3015}
     ]
   }
   

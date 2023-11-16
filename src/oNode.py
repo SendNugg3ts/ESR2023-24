@@ -22,13 +22,18 @@ i = open(path_to_nodeID)
 
 info = json.load(i)
 
-nodeIP = info["ip"]
+if bool(info["RP"]) != True:
+    nodeIP = info["ip"]
+elif bool(info["RP"]) == True:
+    nodeIP1 = info["ip1"]
+    nodeIP2 = info["ip2"]
+    nodeIP3 = info["ip3"]
+    nodeIP4 = info["ip4"]
 
 nodePort_streaming = info["porta_streaming"]
 nodePort1_mensagem = info["porta_mensagem"]
 vizinhos_ip, vizinhos_porta_streaming, vizinhos_porta_mensagem = [], [], []
 for i in range(len(info["vizinhos"])):
-    print(i)
     ip = info["vizinhos"][i]["ip"]
     porta_streaming = info["vizinhos"][i]["porta_streaming"]
     porta_mensagem = info["vizinhos"][i]["porta_mensagem"]
@@ -77,7 +82,7 @@ def RpTestLatency(host1, port1_mensagem, port1_streaming, host2, port2_mensagem,
             end = time.time()
             latencia2 = end - start
             client_socket2.close()
-            time.sleep(2)
+            #time.sleep(2)
         except Exception as e:
             print(f"Error with server 2: {e}")
             latencia2 = float('inf')  # Set a high latency value in case of an error
@@ -88,13 +93,13 @@ def RpTestLatency(host1, port1_mensagem, port1_streaming, host2, port2_mensagem,
             print("Server 1 is faster")
             server_socket.connect((host1, port1_mensagem))
             server_socket.send("START_STREAM".encode())
-            clientGuiStart(host1,port1_streaming,nodeIP,rpPort_streaming,nodeID,filename)#4010 tem de ser a porta de streaming do server e 3000 tem de ser a porta que recebe os rtsps
+            clientGuiStart(host1,port1_streaming,nodeIP1,rpPort_streaming,nodeID,filename)#4010 tem de ser a porta de streaming do server e 3000 tem de ser a porta que recebe os rtsps
         else:
             print("Server 2 is faster")
             server_socket.connect((host2, port2_mensagem)) 
             server_socket.send("START_STREAM".encode())
-            time.sleep(3)
-            clientGuiStart(host2,port2_streaming,nodeIP,rpPort_streaming,nodeID,filename)          
+            #time.sleep(3)
+            clientGuiStart(host2,port2_streaming,nodeIP2,rpPort_streaming,nodeID,filename)          
         #print(f"Latency for server 1: {latencia1} seconds")
         #print(f"Latency for server 2: {latencia2} seconds")
         server_socket.close()

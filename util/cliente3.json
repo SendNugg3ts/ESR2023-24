@@ -6,6 +6,6 @@
   "porta_streaming":2020,
   "porta_mensagem":2025,
   "vizinhos": [
-    {"ip": "10.0.2.2", "porta_streaming": 3020,"porta_mensagem":3025}
+    {"ip": "10.0.5.1", "porta_streaming": 3020,"porta_mensagem":3025}
   ]
 }
