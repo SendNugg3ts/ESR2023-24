@@ -3,8 +3,9 @@
   "RP":false,
   "router":false,
   "ip":"10.0.5.21",
-  "porta":2030,
+  "porta_streaming":2030,
+  "porta_mensagem":2035,
   "vizinhos": [
-    {"ip": "10.0.2.2", "porta": 3020}
+    {"ip": "10.0.2.2", "porta_streaming": 3020,"porta_mensagem":3025}
   ]
 }
