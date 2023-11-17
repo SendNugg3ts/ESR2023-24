@@ -90,39 +90,21 @@ def RpTestLatency(host1, port1_mensagem, host2, port2_mensagem):
         print(f"Error with path 2: {e}")
         latencia2 = float('inf')  # Set a high latency value in case of an error
         
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    rp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     if latencia1 < latencia2:
         print("Path 1 is faster")
-        server_socket.connect((host1, port1_mensagem))
-        server_socket.send("START_STREAM".encode())
-        server_socket.close()
+        rp_socket.connect((host1, port1_mensagem))
+        rp_socket.send("START_STREAM".encode())
+        rp_socket.close()
         return host1
     else:
         print("Path 2 is faster")
-        server_socket.connect((host2, port2_mensagem)) 
-        server_socket.send("START_STREAM".encode())
-        server_socket.close()
+        rp_socket.connect((host2, port2_mensagem)) 
+        rp_socket.send("START_STREAM".encode())
+        rp_socket.close()
         return host2
 
-
-
-
-def verificar_se_vizinho_tem_streaming(vizinho_ip, vizinho_porta):
-    buffer_size = 1024
-    try:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(2)
-            s.connect((vizinho_ip, vizinho_porta))
-            s.sendall(b"CHECK_STREAMING_STATUS")
-            response = s.recv(buffer_size).decode("utf-8")
-            if response == "STREAMING_AVAILABLE":
-                return True
-            else:
-                return False
-    except socket.error as e:
-        print(f"Erro de conexão com o vizinho: {e}")
-        return False
 
 
 def mensagem_cliente_router(routerIP,routerPort):
@@ -146,6 +128,48 @@ def mensagem_router_cliente():
         client_socket.send(fasterIpRP.encode('utf-8'))
         client_socket.close()
         break
+    
+def mensagem_rp_router():
+    RP_socket_1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    RP_socket_1.bind((nodeIP3, nodePort1_mensagem))
+    RP_socket_1.listen(20)
+    RP_socket_2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    RP_socket_2.bind((nodeIP4, nodePort1_mensagem))
+    RP_socket_2.listen(20)
+    print(f"RP aguardando conexões em {nodeIP3}:{nodePort1_mensagem}")
+    print(f"RP aguardando conexões em {nodeIP4}:{nodePort1_mensagem}")
+    while True:
+        client_socket1, client_address1 = RP_socket_1.accept()
+        client_socket2, client_address2 = RP_socket_2.accept()
+
+        print(f"Conexão aceita de {client_address1}")
+        mensagem_cliente1 = client_socket1.recv(1024).decode('utf-8')
+        print(f"Mensagem recebida no socket 1: {mensagem_cliente1}")
+
+        print(f"Conexão aceita de {client_address2}")
+        mensagem_cliente2 = client_socket2.recv(1024).decode('utf-8')
+        print(f"Mensagem recebida no socket 2: {mensagem_cliente2}")
+        
+        resposta1 = "Resposta do RP no socket 1"
+        client_socket1.send(resposta1.encode('utf-8'))
+
+        resposta2 = "Resposta do RP no socket 2"
+        client_socket2.send(resposta2.encode('utf-8'))
+        
+        time.sleep(3)
+        
+        path1 = client_socket1.recv(1024).decode('utf-8')
+        path2 = client_socket2.recv(1024).decode('utf-8')
+        
+        if path1:
+            print("ok foi o nodeIP3")
+            return nodeIP3
+        elif path2:
+            print("ok foi o nodeIP4")
+            return nodeIP4
+        else:
+            Exception("Error connecting")
+
 
 
 if bool(info["server"]) == True:#Servidor
@@ -163,12 +187,8 @@ elif bool(info["RP"]) == False and bool(info["router"]) == True:  # Router
 
 elif bool(info["RP"]) == True:  # RP
     nodeType = "RP"
-    try:
-        RpTestLatency(vizinhos_ip[0], vizinhos_porta_mensagem[0], vizinhos_porta_streaming[0], vizinhos_ip[1], vizinhos_porta_mensagem[1], vizinhos_porta_streaming[1], nodePort_streaming)
-    except Exception as e:
-        print(f"Erro ao testar latência para servidores: {e}")
-else:
-    raise ValueError("Node type not supported")
+    fastest_path=mensagem_rp_router()
+    
 
 
 
