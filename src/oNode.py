@@ -91,19 +91,26 @@ def RpTestLatency(host1, port1_mensagem, host2, port2_mensagem):
         print(f"Error with path 2: {e}")
         latencia2 = float('inf')  # Set a high latency value in case of an error
         
-    rp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    rp_socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    rp_socket2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     if latencia1 < latencia2:
         print("Path 1 is faster")
-        rp_socket.connect((host1, port1_mensagem))
-        rp_socket.send("START_STREAM".encode())
-        rp_socket.close()
+        rp_socket1.connect((host1, port1_mensagem))
+        rp_socket2.connect((host2, port2_mensagem))
+        rp_socket1.send("START_STREAM".encode())
+        rp_socket2.send("LENTOOOO".encode())
+        rp_socket1.close()
+        rp_socket2.close()
         return host1
     else:
         print("Path 2 is faster")
-        rp_socket.connect((host2, port2_mensagem)) 
-        rp_socket.send("START_STREAM".encode())
-        rp_socket.close()
+        rp_socket1.connect((host1, port1_mensagem)) 
+        rp_socket2.connect((host2, port2_mensagem))
+        rp_socket1.send("LENTOOOO".encode()) 
+        rp_socket2.send("START_STREAM".encode())
+        rp_socket1.close()
+        rp_socket2.close()
         return host2
 
 
@@ -177,6 +184,7 @@ if bool(info["server"]) == True:#Servidor
 
 elif bool(info["router"]) == False and bool(info["server"]) == False:#Cliente cabou
     RPIP=mensagem_cliente_router(vizinhos_ip[0],vizinhos_porta_mensagem[0])
+    time.sleep(30)
     clientGuiStart(RPIP, 3000, nodeIP, nodePort_streaming, nodeID, filename)
     
 
@@ -187,6 +195,7 @@ elif bool(info["RP"]) == False and bool(info["router"]) == True:  # Router
 elif bool(info["RP"]) == True:  # RP
     nodeType = "RP"
     fastest_path=mensagem_rp_router()
+    time.sleep(30)
     StartStreaming(fastest_path,nodePort_streaming)
     
 
