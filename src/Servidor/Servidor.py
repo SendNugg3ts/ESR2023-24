@@ -35,7 +35,6 @@ def StartStreaming(ServerIP, start_port):
     current_streaming_port = streaming_port
     
     while True:
-        print("a streamar")
         clientInfo = {}
         clientInfo['rtspSocket'] = rtspSocket.accept()
         ServerWorker(clientInfo).run()

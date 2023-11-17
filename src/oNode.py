@@ -82,7 +82,6 @@ def RpTestLatency(host1, port1_mensagem, port1_streaming, host2, port2_mensagem,
             end = time.time()
             latencia2 = end - start
             client_socket2.close()
-            #time.sleep(2)
         except Exception as e:
             print(f"Error with server 2: {e}")
             latencia2 = float('inf')  # Set a high latency value in case of an error
@@ -93,13 +92,14 @@ def RpTestLatency(host1, port1_mensagem, port1_streaming, host2, port2_mensagem,
             print("Server 1 is faster")
             server_socket.connect((host1, port1_mensagem))
             server_socket.send("START_STREAM".encode())
-            clientGuiStart(host1,port1_streaming,nodeIP1,rpPort_streaming,nodeID,filename)#4010 tem de ser a porta de streaming do server e 3000 tem de ser a porta que recebe os rtsps
+            StartStreaming()
+            #clientGuiStart(host1,port1_streaming,nodeIP1,rpPort_streaming,nodeID,filename)#4010 tem de ser a porta de streaming do server e 3000 tem de ser a porta que recebe os rtsps
         else:
             print("Server 2 is faster")
             server_socket.connect((host2, port2_mensagem)) 
             server_socket.send("START_STREAM".encode())
-            #time.sleep(3)
-            clientGuiStart(host2,port2_streaming,nodeIP2,rpPort_streaming,nodeID,filename)          
+
+            #clientGuiStart(host2,port2_streaming,nodeIP2,rpPort_streaming,nodeID,filename)          
         #print(f"Latency for server 1: {latencia1} seconds")
         #print(f"Latency for server 2: {latencia2} seconds")
         server_socket.close()
@@ -124,33 +124,48 @@ def verificar_se_vizinho_tem_streaming(vizinho_ip, vizinho_porta):
         return False
 
 
+def mensagem_cliente_router(routerIP,routerPort):
+    cliente_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    cliente_socket.connect((routerIP, routerPort))
+    cliente_socket.send("SEND STREAM".encode())
+    RPIP = cliente_socket.recv(1024).decode()
+    return RPIP
+
+
+
+
+
+def mensagem_router_cliente(clienteIP,clientePorta):
+    router_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    router_socket.bind((nodeIP3, nodePort1_mensagem))
+    server_socket.listen(5)
+    print(f"Router aguardando conexões em {nodeIP3}:{nodePort1_mensagem}")
+    while True:
+        client_socket, client_address = router_socket.accept()
+        print(f"Conexão aceite de {client_address}")
+        mensagem_cliente = client_socket.recv(1024).decode('utf-8')
+        print(f"Mensagem recebida: {mensagem_cliente}")
+    melhor_caminho = RpTestLatency(vizinhos_ip[2],vizinhos_porta_mensagem[2],vizinhos_porta_streaming[2],vizinhos_ip[3],vizinhos_porta_mensagem[3] ,vizinhos_porta_streaming[3], rpPort_streaming)
+        ###ver como vejo qual é o melhor 
+        resposta_para_cliente = vizinhos_ip[]
+        client_socket.send(resposta_para_cliente.encode('utf-8'))
+        client_socket.close()
 
 
 if bool(info["server"]) == True:#Servidor
     nodeType= "server"
     serverStart(nodeIP,nodePort1_mensagem,nodePort_streaming)
 
-elif bool(info["router"]) == False and bool(info["server"]) == False:#Cliente cabou
-    clientGuiStart(vizinhos_ip[0], vizinhos_porta_streaming[0], nodeIP, nodePort_streaming, nodeID, filename)
+elif bool(info["router"]) == False and bool(info["server"]) == False#Cliente cabou
+    RPIP=mensagem_cliente_router(vizinhos_ip[0],vizinhos_porta_mensagem[0])
+    clientGuiStart(RPIP, 3000, nodeIP, nodePort_streaming, nodeID, filename)
     
 
 elif bool(info["RP"]) == False and bool(info["router"]) == True:  # Router
     nodeType = "router"
-    try:
-        print(f"Tentando conectar ao Vizinho: {vizinhos_ip[2]}:{vizinhos_porta_mensagem[2]}")
-        vizinho_tem_streaming = verificar_se_vizinho_tem_streaming(vizinhos_ip[2], vizinhos_porta_mensagem[2])
-        print(f"Verificando streaming: {vizinho_tem_streaming}")
-
-        if vizinho_tem_streaming:
-            print(f"Conectando ao Vizinho para Streaming: {vizinhos_ip[2]}:{vizinhos_porta_streaming[2]}")
-            clientGuiStart(vizinhos_ip[2], vizinhos_porta_streaming[2], nodeIP, nodePort_streaming, nodeID, filename)
-        else:
-            print(f"Conectando ao RP: {vizinhos_ip[-1]}:{vizinhos_porta_streaming[-1]}")
-            clientGuiStart(vizinhos_ip[-1], vizinhos_porta_streaming[-1], nodeIP, nodePort_streaming, nodeID, filename)
-
-        print("Conexão estabelecida com sucesso.")
-    except Exception as e:
-        print(f"Erro ao conectar ao RP ou Vizinho: {e}")
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((host, port))
+    #fica à escura
 
 
 elif bool(info["RP"]) == True:  # RP
