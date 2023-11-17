@@ -59,33 +59,34 @@ def RPConfirmation(server_socket):
 
 def RpTestLatency(host1, port1_mensagem, host2, port2_mensagem):
     try:
-        client_socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        rp_socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         start = time.time()
-        client_socket1.connect((host1, port1_mensagem))
+        print(f"Conectar-se a {host1}:{port1_mensagem}")
+        rp_socket1.connect((host1, port1_mensagem))
         message = "Time test"
-        client_socket1.send(message.encode())
-
-        response = client_socket1.recv(1024)
+        rp_socket1.send(message.encode())
+        response = rp_socket1.recv(1024)
         print(f"Received from {host1}: {response.decode()}")
         end = time.time()
         latencia1 = end - start
-        client_socket1.close()
+        rp_socket1.close()
     except Exception as e:
         print(f"Error with path 1: {e}")
         latencia1 = float('inf')  # Set a high latency value in case of an error
 
     try:
-        client_socket2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        rp_socket2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         start = time.time()
-        client_socket2.connect((host2, port2_mensagem))
+        print(f"Conectar-se a {host2}:{port2_mensagem}")
+        rp_socket2.connect((host2, port2_mensagem))
         message = "Time test"
-        client_socket2.send(message.encode())
+        rp_socket2.send(message.encode())
 
-        response = client_socket2.recv(1024)
+        response = rp_socket2.recv(1024)
         print(f"Received from {host2}: {response.decode()}")
         end = time.time()
         latencia2 = end - start
-        client_socket2.close()
+        rp_socket2.close()
     except Exception as e:
         print(f"Error with path 2: {e}")
         latencia2 = float('inf')  # Set a high latency value in case of an error
@@ -124,7 +125,7 @@ def mensagem_router_cliente():
         print(f"Conexão aceite de {client_address}")
         mensagem_cliente = client_socket.recv(1024).decode('utf-8')
         print(f"Mensagem recebida: {mensagem_cliente}")
-        fasterIpRP=RpTestLatency(vizinhos_ip[2],vizinhos_porta_mensagem[2],vizinhos_ip[3],vizinhos_porta_mensagem[3])
+        fasterIpRP=RpTestLatency(vizinhos_ip[3],vizinhos_porta_mensagem[3],vizinhos_ip[2],vizinhos_porta_mensagem[2])
         client_socket.send(fasterIpRP.encode('utf-8'))
         client_socket.close()
         break
@@ -139,32 +140,30 @@ def mensagem_rp_router():
     print(f"RP aguardando conexões em {nodeIP3}:{nodePort1_mensagem}")
     print(f"RP aguardando conexões em {nodeIP4}:{nodePort1_mensagem}")
     while True:
-        client_socket1, client_address1 = RP_socket_1.accept()
-        client_socket2, client_address2 = RP_socket_2.accept()
-
+        rp_socket1, client_address1 = RP_socket_1.accept()
+        
         print(f"Conexão aceita de {client_address1}")
-        mensagem_cliente1 = client_socket1.recv(1024).decode('utf-8')
+        mensagem_cliente1 = rp_socket1.recv(1024).decode('utf-8')
         print(f"Mensagem recebida no socket 1: {mensagem_cliente1}")
 
+        resposta1 = "Resposta RP no socket 1"
+        rp_socket1.send(resposta1.encode('utf-8'))
+        
+        rp_socket2, client_address2 = RP_socket_2.accept()
+        
         print(f"Conexão aceita de {client_address2}")
-        mensagem_cliente2 = client_socket2.recv(1024).decode('utf-8')
+        mensagem_cliente2 = rp_socket2.recv(1024).decode('utf-8')
         print(f"Mensagem recebida no socket 2: {mensagem_cliente2}")
         
-        resposta1 = "Resposta do RP no socket 1"
-        client_socket1.send(resposta1.encode('utf-8'))
-
-        resposta2 = "Resposta do RP no socket 2"
-        client_socket2.send(resposta2.encode('utf-8'))
-        
-        time.sleep(3)
-        
-        path1 = client_socket1.recv(1024).decode('utf-8')
-        path2 = client_socket2.recv(1024).decode('utf-8')
-        
+        resposta2 = "Resposta RP no socket 2"
+        rp_socket2.send(resposta2.encode('utf-8'))
+                
+        path1 = rp_socket1.recv(1024).decode('utf-8')
         if path1:
             print("ok foi o nodeIP3")
             return nodeIP3
-        elif path2:
+        path2 = rp_socket2.recv(1024).decode('utf-8')
+        if path2:
             print("ok foi o nodeIP4")
             return nodeIP4
         else:
@@ -188,6 +187,7 @@ elif bool(info["RP"]) == False and bool(info["router"]) == True:  # Router
 elif bool(info["RP"]) == True:  # RP
     nodeType = "RP"
     fastest_path=mensagem_rp_router()
+    StartStreaming(fastest_path,nodePort_streaming)
     
 
 

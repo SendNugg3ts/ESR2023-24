@@ -10,7 +10,7 @@
     "vizinhos": [
       {"ip": "10.0.4.20", "porta_streaming": 2000,"porta_mensagem":2005},
       {"ip": "10.0.4.21", "porta_streaming": 2010,"porta_mensagem":2015},
-      {"ip": "10.0.2.1", "porta_streaming": 3020,"porta_mensagem":3005},
+      {"ip": "10.0.2.1", "porta_streaming": 3000,"porta_mensagem":3005},
       {"ip": "10.0.3.2", "porta_streaming": 3000,"porta_mensagem":3005}
     ]
   }
