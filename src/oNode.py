@@ -156,6 +156,12 @@ def mensagem_rp_router():
         resposta1 = "Resposta RP no socket 1"
         rp_socket1.send(resposta1.encode('utf-8'))
         
+        if mensagem_cliente1 == "START_STREAM":
+            print("ok foi o nodeIP3")
+            rp_socket1.close()
+            rp_socket2.close()
+            return nodeIP3
+        
         rp_socket2, client_address2 = RP_socket_2.accept()
         
         print(f"Conexão aceita de {client_address2}")
@@ -164,17 +170,13 @@ def mensagem_rp_router():
         
         resposta2 = "Resposta RP no socket 2"
         rp_socket2.send(resposta2.encode('utf-8'))
-                
-        path1 = rp_socket1.recv(1024).decode('utf-8')
-        if path1:
-            print("ok foi o nodeIP3")
-            return nodeIP3
-        path2 = rp_socket2.recv(1024).decode('utf-8')
-        if path2:
+
+        if mensagem_cliente2 == "START_STREAM":
             print("ok foi o nodeIP4")
+            rp_socket1.close()
+            rp_socket2.close()
             return nodeIP4
-        else:
-            Exception("Error connecting")
+
 
 
 
@@ -194,7 +196,6 @@ elif bool(info["RP"]) == False and bool(info["router"]) == True:  # Router
 elif bool(info["RP"]) == True:  # RP
     nodeType = "RP"
     fastest_path=mensagem_rp_router()
-
     StartStreaming(fastest_path,nodePort_streaming)
     
 
