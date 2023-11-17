@@ -184,7 +184,6 @@ if bool(info["server"]) == True:#Servidor
 
 elif bool(info["router"]) == False and bool(info["server"]) == False:#Cliente cabou
     RPIP=mensagem_cliente_router(vizinhos_ip[0],vizinhos_porta_mensagem[0])
-    time.sleep(30)
     clientGuiStart(RPIP, 3000, nodeIP, nodePort_streaming, nodeID, filename)
     
 
@@ -195,7 +194,7 @@ elif bool(info["RP"]) == False and bool(info["router"]) == True:  # Router
 elif bool(info["RP"]) == True:  # RP
     nodeType = "RP"
     fastest_path=mensagem_rp_router()
-    time.sleep(30)
+
     StartStreaming(fastest_path,nodePort_streaming)
     
 
