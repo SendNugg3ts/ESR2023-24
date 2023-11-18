@@ -4,7 +4,7 @@ import json
 import sys
 import os
 import re
-
+import select
 
 from Servidor.Servidor import *
 from Cliente.Cliente import *
@@ -49,6 +49,10 @@ for i in range(len(info["vizinhos"])):
     vizinhos_porta_mensagem.append(porta_mensagem)
 
 
+
+
+
+
 def RPConfirmation(server_socket):
         stream_data = server_socket.recv(20480)
         if stream_data:
@@ -56,7 +60,7 @@ def RPConfirmation(server_socket):
             #print("Stream data received!")
         
 
-
+#Routers usam para ver o mais raido
 def RpTestLatency(host1, port1_mensagem, host2, port2_mensagem):
     try:
         rp_socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -166,16 +170,22 @@ def mensagem_rp_router():
     print(f"RP aguardando conexões em {nodeIP3}:{nodePort1_mensagem}")
     print(f"RP aguardando conexões em {nodeIP4}:{nodePort1_mensagem}")
 
-    while True:
-        rp_socket1, client_address1 = RP_socket_1.accept()
-        thread1 = threading.Thread(target=handle_client, args=(rp_socket1, client_address1, nodeIP3))
-        thread1.start()
+    inputs = [RP_socket_1, RP_socket_2]
 
-        rp_socket2, client_address2 = RP_socket_2.accept()
-        thread2 = threading.Thread(target=handle_client, args=(rp_socket2, client_address2, nodeIP4))
-        thread2.start()
-    rp_socket1.close()
-    rp_socket2.close()
+    while True:
+        # Use select to wait for incoming connections
+        readable, _, _ = select.select(inputs, [], [])
+
+        for readable_socket in readable:
+            if readable_socket == RP_socket_1:
+                rp_socket1, client_address1 = RP_socket_1.accept()
+                thread1 = threading.Thread(target=handle_client, args=(rp_socket1, client_address1, nodeIP3))
+                thread1.start()
+
+            elif readable_socket == RP_socket_2:
+                rp_socket2, client_address2 = RP_socket_2.accept()
+                thread2 = threading.Thread(target=handle_client, args=(rp_socket2, client_address2, nodeIP4))
+                thread2.start()
 
 
 
@@ -196,7 +206,6 @@ elif bool(info["RP"]) == False and bool(info["router"]) == True:  # Router
 elif bool(info["RP"]) == True:  # RP
     nodeType = "RP"
     mensagem_rp_router()
-    #O servidor tem os dois ips ocupados a fazer streaming, deve precisar de threads
     
 
 

@@ -45,6 +45,10 @@ def StartStreaming(ServerIP, start_port):
     streaming_states[ServerIP] = {'is_streaming': False, 'streaming_port': None}
     rtspSocket.close()
 
+
+
+
+#parte debaixo não esta a ser usada
 # Função para lidar com um cliente
 def handle_client(client_socket, ServerIP, start_port):
     global is_streaming, current_streaming_port
