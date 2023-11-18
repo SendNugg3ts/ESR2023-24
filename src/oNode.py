@@ -135,7 +135,8 @@ def mensagem_router_cliente():
         fasterIpRP=RpTestLatency(vizinhos_ip[3],vizinhos_porta_mensagem[3],vizinhos_ip[2],vizinhos_porta_mensagem[2])
         client_socket.send(fasterIpRP.encode('utf-8'))
         client_socket.close()
-        break
+    router_socket.close()
+        
     
 def mensagem_rp_router():
     RP_socket_1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -196,6 +197,7 @@ elif bool(info["RP"]) == False and bool(info["router"]) == True:  # Router
 elif bool(info["RP"]) == True:  # RP
     nodeType = "RP"
     fastest_path=mensagem_rp_router()
+    #O servidor tem os dois ips ocupados a fazer streaming, deve precisar de threads
     StartStreaming(fastest_path,nodePort_streaming)
     
 
