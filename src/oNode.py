@@ -114,7 +114,7 @@ def RpTestLatency(host1, port1_mensagem, host2, port2_mensagem):
         return host2
 
 
-
+#Parte Cliente
 def mensagem_cliente_router(routerIP,routerPort):
     cliente_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     cliente_socket.connect((routerIP, routerPort))
@@ -122,6 +122,7 @@ def mensagem_cliente_router(routerIP,routerPort):
     RPIP = cliente_socket.recv(1024).decode()
     return RPIP
 
+#Parte Router
 def mensagem_router_cliente():
     router_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     router_socket.bind((nodeIP3, nodePort1_mensagem))
@@ -137,46 +138,44 @@ def mensagem_router_cliente():
         client_socket.close()
     router_socket.close()
         
+#Parte do RP
+def handle_client(rp_socket, client_address, streamingIP):
+    print(f"Conexão aceita de {client_address}")
+    mensagem_cliente = rp_socket.recv(1024).decode('utf-8')
+    print(f"Mensagem recebida: {mensagem_cliente}")
+
+    resposta = f"Resposta RP para {client_address}"
+    rp_socket.send(resposta.encode('utf-8'))
+
+    if mensagem_cliente == "START_STREAM":
+        print(f"OK foi de {client_address}")
+        StartStreaming(streamingIP, nodePort_streaming)
+
+    rp_socket.close()
+    
     
 def mensagem_rp_router():
     RP_socket_1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     RP_socket_1.bind((nodeIP3, nodePort1_mensagem))
     RP_socket_1.listen(20)
+
     RP_socket_2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     RP_socket_2.bind((nodeIP4, nodePort1_mensagem))
     RP_socket_2.listen(20)
+
     print(f"RP aguardando conexões em {nodeIP3}:{nodePort1_mensagem}")
     print(f"RP aguardando conexões em {nodeIP4}:{nodePort1_mensagem}")
+
     while True:
         rp_socket1, client_address1 = RP_socket_1.accept()
-        
-        print(f"Conexão aceita de {client_address1}")
-        mensagem_cliente1 = rp_socket1.recv(1024).decode('utf-8')
-        print(f"Mensagem recebida no socket 1: {mensagem_cliente1}")
+        thread1 = threading.Thread(target=handle_client, args=(rp_socket1, client_address1, nodeIP3))
+        thread1.start()
 
-        resposta1 = "Resposta RP no socket 1"
-        rp_socket1.send(resposta1.encode('utf-8'))
-        
-        if mensagem_cliente1 == "START_STREAM":
-            print("ok foi o nodeIP3")
-            rp_socket1.close()
-            rp_socket2.close()
-            return nodeIP3
-        
         rp_socket2, client_address2 = RP_socket_2.accept()
-        
-        print(f"Conexão aceita de {client_address2}")
-        mensagem_cliente2 = rp_socket2.recv(1024).decode('utf-8')
-        print(f"Mensagem recebida no socket 2: {mensagem_cliente2}")
-        
-        resposta2 = "Resposta RP no socket 2"
-        rp_socket2.send(resposta2.encode('utf-8'))
-
-        if mensagem_cliente2 == "START_STREAM":
-            print("ok foi o nodeIP4")
-            rp_socket1.close()
-            rp_socket2.close()
-            return nodeIP4
+        thread2 = threading.Thread(target=handle_client, args=(rp_socket2, client_address2, nodeIP4))
+        thread2.start()
+    rp_socket1.close()
+    rp_socket2.close()
 
 
 
@@ -196,9 +195,8 @@ elif bool(info["RP"]) == False and bool(info["router"]) == True:  # Router
 
 elif bool(info["RP"]) == True:  # RP
     nodeType = "RP"
-    fastest_path=mensagem_rp_router()
+    mensagem_rp_router()
     #O servidor tem os dois ips ocupados a fazer streaming, deve precisar de threads
-    StartStreaming(fastest_path,nodePort_streaming)
     
 
 
