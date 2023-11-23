@@ -103,7 +103,7 @@ def RpTestLatency(host1, port1_mensagem, host2, port2_mensagem):
         rp_socket1.connect((host1, port1_mensagem))
         rp_socket2.connect((host2, port2_mensagem))
         rp_socket1.send("START_STREAM".encode())
-        rp_socket2.send("LENTOOOO".encode())
+        rp_socket2.send("Slower".encode())
         rp_socket1.close()
         rp_socket2.close()
         return host1
@@ -111,7 +111,7 @@ def RpTestLatency(host1, port1_mensagem, host2, port2_mensagem):
         print("Path 2 is faster")
         rp_socket1.connect((host1, port1_mensagem)) 
         rp_socket2.connect((host2, port2_mensagem))
-        rp_socket1.send("LENTOOOO".encode()) 
+        rp_socket1.send("Slower".encode()) 
         rp_socket2.send("START_STREAM".encode())
         rp_socket1.close()
         rp_socket2.close()
@@ -128,19 +128,61 @@ def mensagem_cliente_router(routerIP,routerPort):
 
 #Parte Router
 def mensagem_router_cliente():
-    router_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    router_socket.bind((nodeIP3, nodePort1_mensagem))
-    router_socket.listen(5)
+    router_socket_1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    router_socket_1.bind((nodeIP3, nodePort1_mensagem))
+    router_socket_1.listen(6)
+
+    router_socket_2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    router_socket_2.bind((nodeIP2, nodePort1_mensagem))
+    router_socket_2.listen(6)
+
+    inputs = [router_socket_1, router_socket_2]
     print(f"Router aguardando conexões em {nodeIP3}:{nodePort1_mensagem}")
+    passar_streaming = False
+    fasterIpRP = "nada"
     while True:
-        client_socket, client_address = router_socket.accept()
-        print(f"Conexão aceite de {client_address}")
-        mensagem_cliente = client_socket.recv(1024).decode('utf-8')
-        print(f"Mensagem recebida: {mensagem_cliente}")
-        fasterIpRP=RpTestLatency(vizinhos_ip[3],vizinhos_porta_mensagem[3],vizinhos_ip[2],vizinhos_porta_mensagem[2])
-        client_socket.send(fasterIpRP.encode('utf-8'))
-        client_socket.close()
-    router_socket.close()
+        readable, _, _ = select.select(inputs, [], [])
+
+        for readable_socket in readable:
+            if readable_socket == router_socket_1:
+                client_socket, client_address = router_socket_1.accept()
+                print(f"Conexão aceite de {client_address}")
+                mensagem_cliente = client_socket.recv(1024).decode('utf-8')
+                print(f"Mensagem recebida: {mensagem_cliente}")
+
+            elif readable_socket == router_socket_2:
+                router_socket, client_address = router_socket_2.accept()
+        
+
+
+        if client_address[0] != vizinhos_ip[4]:
+            if passar_streaming == False:
+                stream_test_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                stream_test_socket.connect((vizinhos_ip[4], vizinhos_porta_mensagem[4]))
+                stream_test_socket.send("Estás a passar streaming?".encode('utf-8'))
+                resposta_streaming = stream_test_socket.recv(1024).decode('utf-8')
+                if resposta_streaming == "sim":
+                    fasterIpRP=RpTestLatency(vizinhos_ip[4],vizinhos_porta_mensagem[4],vizinhos_ip[2],vizinhos_porta_mensagem[2])
+                    if fasterIpRP == vizinhos_ip[4]:
+                        fasterIpRP = vizinhos_ip[3]
+                    passar_streaming = True
+                else:
+                    fasterIpRP=RpTestLatency(vizinhos_ip[3],vizinhos_porta_mensagem[3],vizinhos_ip[2],vizinhos_porta_mensagem[2])
+                    passar_streaming = True
+            stream_test_socket.close()
+
+            client_socket.send(fasterIpRP.encode('utf-8'))
+            client_socket.close()
+
+        else:
+            if passar_streaming == False:
+                router_socket.send("não".encode('utf-8'))
+            else:
+                router_socket.send("sim".encode('utf-8'))
+            
+        
+    router_socket_1.close()
+    router_socket_2.close()
         
 #Parte do RP
 def handle_client(rp_socket, client_address, streamingIP):

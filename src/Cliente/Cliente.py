@@ -8,7 +8,7 @@ from Cliente.ClientWorker import ClientWorker
 
 
 def clientGuiStart(serverIP,serverPort, addr, port, name, filename):
-    time.sleep(5)
+    time.sleep(2)
     print(f'\nA iniciar {name} à escuta em {addr}:{port}')
     while True:
         
