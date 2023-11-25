@@ -165,15 +165,18 @@ def mensagem_router_cliente():
         if client_address[0] != vizinhos_ip[4]:
             if passar_streaming == False:
                 stream_test_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                stream_test_socket.connect((vizinhos_ip[4], vizinhos_porta_mensagem[4]))
-                stream_test_socket.send("Estás a passar streaming?".encode())
-                resposta_streaming = stream_test_socket.recv(1024).decode()
-                if resposta_streaming == "sim":
-                    fasterIpRP=RpTestLatency(vizinhos_ip[4],vizinhos_porta_mensagem[4],vizinhos_ip[2],vizinhos_porta_mensagem[2],True,True,vizinhos_ip[3],vizinhos_porta_mensagem[3])
-                    passar_streaming = True
-                else:
+                try:
+                    stream_test_socket.connect((vizinhos_ip[4], vizinhos_porta_mensagem[4]))
+                    stream_test_socket.send("Estás a passar streaming?".encode())
+                    resposta_streaming = stream_test_socket.recv(1024).decode()
+                    if resposta_streaming == "sim":
+                        fasterIpRP=RpTestLatency(vizinhos_ip[4],vizinhos_porta_mensagem[4],vizinhos_ip[2],vizinhos_porta_mensagem[2],True,True,vizinhos_ip[3],vizinhos_porta_mensagem[3])
+                        passar_streaming = True
+                    else:
+                        fasterIpRP=RpTestLatency(vizinhos_ip[3],vizinhos_porta_mensagem[3],vizinhos_ip[2],vizinhos_porta_mensagem[2],True,False,None,None)
+                        passar_streaming = True
+                except:
                     fasterIpRP=RpTestLatency(vizinhos_ip[3],vizinhos_porta_mensagem[3],vizinhos_ip[2],vizinhos_porta_mensagem[2],True,False,None,None)
-                    passar_streaming = True
             stream_test_socket.close()
 
             client_socket.send(fasterIpRP.encode())

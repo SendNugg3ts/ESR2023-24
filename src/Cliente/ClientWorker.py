@@ -81,14 +81,16 @@ class ClientWorker:
 	
 	
 
-
 	def exitClient(self):
 		"""Teardown button handler."""
-		current_directory = os.path.dirname(__file__) if __file__ is not None else os.path.curdir
-		cachename = os.path.join(current_directory, CACHE_FILE_NAME + str(self.sessionId) + CACHE_FILE_EXT)
 		self.sendRtspRequest(self.TEARDOWN)
-		self.master.destroy()  # Close the GUI window
-		os.remove(cachename)  # Delete the cache image from video
+		self.master.destroy()  # Close the gui window
+		self.rtpSocket.close()
+		try:
+			os.remove(CACHE_FILE_NAME + str(self.sessionId) + CACHE_FILE_EXT)  # Delete the cache image from video
+		except FileNotFoundError:
+			pass
+		exit()
 
 
 
@@ -129,7 +131,7 @@ class ClientWorker:
 				# Upon receiving ACK for TEARDOWN request,
 				# close the RTP socket
 				if self.teardownAcked == 1:
-					self.rtpSocket.shutdown(socket.SHUT_RDWR)
+					#self.rtpSocket.shutdown(socket.SHUT_RDWR)
 					self.rtpSocket.close()
 					break
 					
@@ -235,7 +237,7 @@ class ClientWorker:
 			
 			# Close the RTSP socket upon requesting Teardown
 			if self.requestSent == self.TEARDOWN:
-				self.rtspSocket.shutdown(socket.SHUT_RDWR)
+				#self.rtspSocket.shutdown(socket.SHUT_RDWR)
 				self.rtspSocket.close()
 				break
 	
