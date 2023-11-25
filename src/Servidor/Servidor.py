@@ -47,9 +47,7 @@ def StartStreaming(ServerIP, start_port):
 
 
 
-
-#parte debaixo não esta a ser usada
-# Função para lidar com um cliente
+# Funções dos servidores
 def handle_client(client_socket, ServerIP, start_port):
     global is_streaming, current_streaming_port
     
