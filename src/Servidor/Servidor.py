@@ -56,7 +56,7 @@ def handle_client(client_socket, ServerIP, start_port):
     message = client_socket.recv(1024)
     print(f"Recebido do cliente {threading.current_thread().name}: {message.decode()}")
     if message.decode() == "START_STREAM":
-        print("A começar stream")
+        print(f"A começar stream em {ServerIP}:{start_port}")
         StartStreaming(ServerIP, start_port)
     else:
         response = "HELLO"

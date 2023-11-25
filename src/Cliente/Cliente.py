@@ -18,6 +18,7 @@ def clientGuiStart(serverIP,serverPort, addr, port, name, filename):
 
         root = Tk()
         # Create a new client
+        print(f"a conectar à stream em {serverIP}:{serverPort}") 
         app = ClientWorker(root,serverIP,serverPort,addr,port,filename)
         app.master.title("RTP Client")
         root.wait_visibility()

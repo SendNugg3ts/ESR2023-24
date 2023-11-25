@@ -3,7 +3,7 @@
     "RP":false,
     "router":false,
     "ip":"10.0.1.10",
-    "porta_streaming":4050,
+    "porta_streaming":3000,
     "porta_mensagem":4055,
     "vizinhos": [
       {"ip": "10.0.1.1", "porta_streaming": 3000,"porta_mensagem":3005}

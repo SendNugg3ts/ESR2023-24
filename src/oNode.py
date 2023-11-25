@@ -51,17 +51,8 @@ for i in range(len(info["vizinhos"])):
 
 
 
-
-
-def RPConfirmation(server_socket):
-        stream_data = server_socket.recv(20480)
-        if stream_data:
-            print(stream_data)
-            #print("Stream data received!")
-        
-
 #Routers usam para ver o mais raido
-def RpTestLatency(host1, port1_mensagem, host2, port2_mensagem):
+def RpTestLatency(host1, port1_mensagem, host2, port2_mensagem,isRouter,checkingRouter,host3,port3_mensagem):
     try:
         rp_socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         start = time.time()
@@ -69,6 +60,7 @@ def RpTestLatency(host1, port1_mensagem, host2, port2_mensagem):
         rp_socket1.connect((host1, port1_mensagem))
         message = "Time test"
         rp_socket1.send(message.encode())
+        
         response = rp_socket1.recv(1024)
         print(f"Received from {host1}: {response.decode()}")
         end = time.time()
@@ -100,22 +92,37 @@ def RpTestLatency(host1, port1_mensagem, host2, port2_mensagem):
 
     if latencia1 < latencia2:
         print("Path 1 is faster")
-        rp_socket1.connect((host1, port1_mensagem))
+        if checkingRouter:
+            rp_socket1.connect((host3, port3_mensagem))
+        else:  
+            rp_socket1.connect((host1, port1_mensagem))
         rp_socket2.connect((host2, port2_mensagem))
         rp_socket1.send("START_STREAM".encode())
         rp_socket2.send("Slower".encode())
-        rp_socket1.close()
-        rp_socket2.close()
-        return host1
+        if isRouter: 
+            response = rp_socket1.recv(1024).decode()#problema aqui é quando ele conecta se a outro router, a resposta do outro router é sim porque ele não se conecta ao RP
+            rp_socket1.close()
+            rp_socket2.close()
+            return response
+        else:
+            rp_socket1.close()
+            rp_socket2.close()
+            return host1
     else:
         print("Path 2 is faster")
         rp_socket1.connect((host1, port1_mensagem)) 
         rp_socket2.connect((host2, port2_mensagem))
         rp_socket1.send("Slower".encode()) 
         rp_socket2.send("START_STREAM".encode())
-        rp_socket1.close()
-        rp_socket2.close()
-        return host2
+        if isRouter:
+            response = rp_socket2.recv(1024).decode()
+            rp_socket1.close()
+            rp_socket2.close()
+            return response
+        else:
+            rp_socket1.close()
+            rp_socket2.close()
+            return host2
 
 
 #Parte Cliente
@@ -147,7 +154,7 @@ def mensagem_router_cliente():
             if readable_socket == router_socket_1:
                 client_socket, client_address = router_socket_1.accept()
                 print(f"Conexão aceite de {client_address}")
-                mensagem_cliente = client_socket.recv(1024).decode('utf-8')
+                mensagem_cliente = client_socket.recv(1024).decode()
                 print(f"Mensagem recebida: {mensagem_cliente}")
 
             elif readable_socket == router_socket_2:
@@ -159,43 +166,39 @@ def mensagem_router_cliente():
             if passar_streaming == False:
                 stream_test_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 stream_test_socket.connect((vizinhos_ip[4], vizinhos_porta_mensagem[4]))
-                stream_test_socket.send("Estás a passar streaming?".encode('utf-8'))
-                resposta_streaming = stream_test_socket.recv(1024).decode('utf-8')
+                stream_test_socket.send("Estás a passar streaming?".encode())
+                resposta_streaming = stream_test_socket.recv(1024).decode()
                 if resposta_streaming == "sim":
-                    fasterIpRP=RpTestLatency(vizinhos_ip[4],vizinhos_porta_mensagem[4],vizinhos_ip[2],vizinhos_porta_mensagem[2])
-                    if fasterIpRP == vizinhos_ip[4]:
-                        fasterIpRP = vizinhos_ip[3]
+                    fasterIpRP=RpTestLatency(vizinhos_ip[4],vizinhos_porta_mensagem[4],vizinhos_ip[2],vizinhos_porta_mensagem[2],True,True,vizinhos_ip[3],vizinhos_porta_mensagem[3])
                     passar_streaming = True
                 else:
-                    fasterIpRP=RpTestLatency(vizinhos_ip[3],vizinhos_porta_mensagem[3],vizinhos_ip[2],vizinhos_porta_mensagem[2])
+                    fasterIpRP=RpTestLatency(vizinhos_ip[3],vizinhos_porta_mensagem[3],vizinhos_ip[2],vizinhos_porta_mensagem[2],True,False,None,None)
                     passar_streaming = True
             stream_test_socket.close()
 
-            client_socket.send(fasterIpRP.encode('utf-8'))
+            client_socket.send(fasterIpRP.encode())
             client_socket.close()
 
         else:
             if passar_streaming == False:
-                router_socket.send("não".encode('utf-8'))
+                router_socket.send("não".encode())
             else:
-                router_socket.send("sim".encode('utf-8'))
+                router_socket.send("sim".encode())
             
         
     router_socket_1.close()
     router_socket_2.close()
         
 #Parte do RP
-def handle_client(rp_socket, client_address, streamingIP):
+def handle_client(rp_socket, client_address):
     print(f"Conexão aceita de {client_address}")
-    mensagem_cliente = rp_socket.recv(1024).decode('utf-8')
+    mensagem_cliente = rp_socket.recv(1024).decode()
     print(f"Mensagem recebida: {mensagem_cliente}")
-
-    resposta = f"Resposta RP para {client_address}"
-    rp_socket.send(resposta.encode('utf-8'))
 
     if mensagem_cliente == "START_STREAM":
         print(f"OK foi de {client_address}")
-        StartStreaming(streamingIP, nodePort_streaming)
+        fastest_server=RpTestLatency(vizinhos_ip[0],vizinhos_porta_mensagem[0],vizinhos_ip[1],vizinhos_porta_mensagem[1],False,False,None,None)
+        rp_socket.send(fastest_server.encode())
 
     rp_socket.close()
     
@@ -221,12 +224,12 @@ def mensagem_rp_router():
         for readable_socket in readable:
             if readable_socket == RP_socket_1:
                 rp_socket1, client_address1 = RP_socket_1.accept()
-                thread1 = threading.Thread(target=handle_client, args=(rp_socket1, client_address1, nodeIP3))
+                thread1 = threading.Thread(target=handle_client, args=(rp_socket1, client_address1))
                 thread1.start()
 
             elif readable_socket == RP_socket_2:
                 rp_socket2, client_address2 = RP_socket_2.accept()
-                thread2 = threading.Thread(target=handle_client, args=(rp_socket2, client_address2, nodeIP4))
+                thread2 = threading.Thread(target=handle_client, args=(rp_socket2, client_address2))
                 thread2.start()
 
 
@@ -237,8 +240,8 @@ if bool(info["server"]) == True:#Servidor
     serverStart(nodeIP,nodePort1_mensagem,nodePort_streaming)
 
 elif bool(info["router"]) == False and bool(info["server"]) == False:#Cliente cabou
-    RPIP=mensagem_cliente_router(vizinhos_ip[0],vizinhos_porta_mensagem[0])
-    clientGuiStart(RPIP, 3000, nodeIP, nodePort_streaming, nodeID, filename)
+    serverIP=mensagem_cliente_router(vizinhos_ip[0],vizinhos_porta_mensagem[0])
+    clientGuiStart(serverIP, 3000, nodeIP, nodePort_streaming, nodeID, filename)
     
 
 elif bool(info["RP"]) == False and bool(info["router"]) == True:  # Router
