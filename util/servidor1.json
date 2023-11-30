@@ -4,7 +4,7 @@
   "router":false,
   "ip":"10.0.0.10",
   "porta_streaming":3000,
-  "porta_mensagem":1005,
+  "porta_mensagem":2005,
   "vizinhos": [
     {"ip": "10.0.0.1", "porta_streaming": 3000,"porta_mensagem":3005}
   ]

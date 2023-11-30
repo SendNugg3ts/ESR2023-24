@@ -9,7 +9,7 @@
   "porta_streaming":3000,
   "porta_mensagem":3005,
   "vizinhos": [
-    {"ip": "10.0.0.10", "porta_streaming": 1000,"porta_mensagem":1005}, 
+    {"ip": "10.0.0.10", "porta_streaming": 3000,"porta_mensagem":2005}, 
     {"ip": "10.0.1.10", "porta_streaming": 4050,"porta_mensagem":4055},
     {"ip": "10.0.3.1", "porta_streaming": 3010,"porta_mensagem":3015},
     {"ip": "10.0.2.2", "porta_streaming": 3020,"porta_mensagem":3025}
